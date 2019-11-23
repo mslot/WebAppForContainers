@@ -76,6 +76,10 @@
           "linuxFxVersion": "DOCKER",
           "appSettings": [
             {
+              "name": "WEBSITES_ENABLE_APP_SERVICE_STORAGE",
+              "value": "true"
+            },
+            {
               "name": "DOCKER_REGISTRY_SERVER_URL",
               "value": "[reference(resourceId('Microsoft.ContainerRegistry/registries',parameters('acrName')),'2019-05-01').loginServer]"
             },
