@@ -26,10 +26,29 @@
     "acrAdminUserEnabled": {
       "type": "bool",
       "defaultValue": true
+    },
+    "storageAccountName": {
+      "type": "string"
+    },
+    "storageAccountType": {
+      "type": "string",
+      "defaultValue": "Standard_LRS"
     }
+
   },
   "variables": {},
   "resources": [
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "name": "[parameters('storageAccountName')]",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2019-04-01",
+      "sku": {
+        "name": "[parameters('storageAccountType')]"
+      },
+      "kind": "StorageV2",
+      "properties": {}
+    },
     {
       "name": "[parameters('acrName')]",
       "type": "Microsoft.ContainerRegistry/registries",
