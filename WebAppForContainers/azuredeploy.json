@@ -76,46 +76,6 @@
         "name": "[parameters('hostingPlanName')]",
         "reserved": true
       }
-    },
-    {
-      "apiVersion": "2015-08-01",
-      "name": "[parameters('webSiteName')]",
-      "type": "Microsoft.Web/sites",
-      "kind": "app,linux,container",
-      "location": "[resourceGroup().location]",
-      "dependsOn": [
-        "[parameters('hostingPlanName')]",
-        "[parameters('acrName')]"
-
-      ],
-      "properties": {
-        "name": "[parameters('webSiteName')]",
-        "serverFarmId": "[parameters('hostingPlanName')]",
-        "siteConfig": {
-          "linuxFxVersion": "DOCKER",
-          "appSettings": [
-            {
-              "name": "WEBSITES_ENABLE_APP_SERVICE_STORAGE",
-              "value": "true"
-            },
-            {
-              "name": "DOCKER_REGISTRY_SERVER_URL",
-              "value": "[reference(resourceId('Microsoft.ContainerRegistry/registries',parameters('acrName')),'2019-05-01').loginServer]"
-            },
-            {
-
-              "name": "DOCKER_REGISTRY_SERVER_USERNAME",
-              "value": "[parameters('acrName')]"
-            },
-            {
-              "name": "DOCKER_REGISTRY_SERVER_PASSWORD",
-              "value": "[listCredentials(resourceId('Microsoft.ContainerRegistry/registries',parameters('acrName')),'2017-03-01').passwords[0].value]"
-
-            }
-
-          ]
-        }
-      }
     }
   ],
   "outputs": {}
