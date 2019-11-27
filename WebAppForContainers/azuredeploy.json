@@ -33,11 +33,72 @@
     "storageAccountType": {
       "type": "string",
       "defaultValue": "Standard_LRS"
+    },
+    "kvName": {
+      "type": "string"
+    },
+    "kvEnabledForDeployment": {
+      "type": "bool",
+      "defaultValue": true
+    },
+    "kvEnabledForDiskEncryption": {
+      "type": "bool",
+      "defaultValue": true
+    },
+    "kvEnabledForTemplateDeployment": {
+      "type": "bool",
+      "defaultValue": true
+    },
+    "kvTenantId": {
+      "type": "string",
+      "defaultValue": "[subscription().tenantId]"
+    },
+    "kvKeysPermissions": {
+      "type": "array",
+      "defaultValue": [
+        "list"
+      ]
+    },
+    "kvSecretsPermissions": {
+      "type": "array",
+      "defaultValue": [
+        "list"
+      ]
+    },
+    "kvSkuName": {
+      "type": "string",
+      "defaultValue": "Standard",
+      "allowedValues": [
+        "Standard",
+        "Premium"
+      ]
     }
-
   },
   "variables": {},
   "resources": [
+    {
+      "type": "Microsoft.KeyVault/vaults",
+      "name": "[parameters('kvName')]",
+      "apiVersion": "2018-02-14",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "enabledForDeployment": "[parameters('kvEnabledForDeployment')]",
+        "enabledForDiskEncryption": "[parameters('kvEnabledForDiskEncryption')]",
+        "enabledForTemplateDeployment": "[parameters('kvEnabledForTemplateDeployment')]",
+        "tenantId": "[parameters('kvTenantId')]",
+        "accessPolicies": [],
+        "sku": {
+          "name": "[parameters('kvSkuName')]",
+          "family": "A"
+        },
+        "networkAcls": {
+          "value": {
+            "defaultAction": "Allow",
+            "bypass": "AzureServices"
+          }
+        }
+      }
+    },
     {
       "type": "Microsoft.Storage/storageAccounts",
       "name": "[parameters('storageAccountName')]",
