@@ -1,5 +1,5 @@
 {
-  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
     "hostingPlanName": {
@@ -12,9 +12,6 @@
     "skuCapacity": {
       "type": "string",
       "defaultValue": "1"
-    },
-    "webSiteName": {
-      "type": "string"
     },
     "acrName": {
       "type": "string"
@@ -33,10 +30,74 @@
     "storageAccountType": {
       "type": "string",
       "defaultValue": "Standard_LRS"
+    },
+    "sqlserverName": {
+      "type": "string"
+    },
+    "sqlAdminLogin": {
+      "type": "string"
+    },
+    "sqlAdminLoginPassword": {
+      "type": "securestring"
+    },
+    "databaseName": {
+      "type": "string"
+    },
+    "databaseSku": {
+      "type": "string",
+      "defaultValue": "Basic"
+    },
+    "databaseCollation": {
+      "type": "string",
+      "defaultValue": "SQL_Latin1_General_CP1_CI_AS"
+    },
+    "kvName": {
+      "type": "string"
     }
   },
   "variables": {},
   "resources": [
+    {
+      "name": "[parameters('sqlserverName')]",
+      "type": "Microsoft.Sql/servers",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2014-04-01-preview",
+      "dependsOn": [],
+      "properties": {
+        "administratorLogin": "[parameters('sqlAdminLogin')]",
+        "administratorLoginPassword": "[parameters('sqlAdminLoginPassword')]"
+      },
+      "resources": [
+        {
+          "name": "AllowAllWindowsAzureIps",
+          "type": "firewallrules",
+          "location": "[resourceGroup().location]",
+          "apiVersion": "2014-04-01-preview",
+          "dependsOn": [
+            "[resourceId('Microsoft.Sql/servers', parameters('sqlserverName'))]"
+          ],
+          "properties": {
+            "startIpAddress": "0.0.0.0",
+            "endIpAddress": "0.0.0.0"
+          }
+        },
+        {
+          "name": "[parameters('databaseName')]",
+          "type": "databases",
+          "location": "[resourceGroup().location]",
+          "apiVersion": "2017-10-01-preview",
+          "dependsOn": [
+            "[resourceId('Microsoft.Sql/servers', parameters('sqlserverName'))]"
+          ],
+          "sku": {
+            "name": "[parameters('databaseSku')]"
+          },
+          "properties": {
+            "collation": "[parameters('databaseCollation')]"
+          }
+        }
+      ]
+    },
     {
       "type": "Microsoft.Storage/storageAccounts",
       "name": "[parameters('storageAccountName')]",
